@@ -1,3 +1,4 @@
+
 # AI Symptom Checker
 
 A simple AI-powered symptom checker built with **Streamlit** and **scikit-learn**.  
@@ -97,3 +98,4 @@ streamlit>=1.25.0
 pandas>=2.1.0
 scikit-learn>=1.3.0
 numpy>=1.26.0
+=======
