@@ -144,29 +144,29 @@ if option == "🧠 Disease Prediction":
 
 # Option 1: Browse by Category
 
-with st.expander("Select Symptoms by Category"):
-    for category, symptoms in symptom_categories.items():
-        st.markdown(f"**{category}**")
-        cols = st.columns(2)
-        half = len(symptoms) // 2 + 1
+    with st.expander("Select Symptoms by Category"):
+        for category, symptoms in symptom_categories.items():
+            st.markdown(f"**{category}**")
+            cols = st.columns(2)
+            half = len(symptoms) // 2 + 1
         # Split into two columns for better layout
-        for i, (symptom_key, symptom_label) in enumerate(symptoms.items()):
-            col = cols[0] if i < half else cols[1]
-            if col.checkbox(symptom_label, key=symptom_key):
-                selected_symptoms.append(symptom_key)
+            for i, (symptom_key, symptom_label) in enumerate(symptoms.items()):
+                col = cols[0] if i < half else cols[1]
+                if col.checkbox(symptom_label, key=symptom_key):
+                    selected_symptoms.append(symptom_key)
 
 
-if st.button("🔮 Predict Disease"):
-        if not selected_symptoms:
-            st.error("Please select at least one symptom.")
-        else:
-            # Encode symptoms
-            input_vector = np.array(encode_symptoms(selected_symptoms, all_symptoms)).reshape(1, -1)
+    if st.button("🔮 Predict Disease"):
+            if not selected_symptoms:
+                st.error("Please select at least one symptom.")
+            else:
+                # Encode symptoms
+                input_vector = np.array(encode_symptoms(selected_symptoms, all_symptoms)).reshape(1, -1)
 
-            # Predict using ensemble
+        # Predict using ensemble
             probs, pred_disease = ensemble_predict(models, input_vector, all_diseases)
 
-            # ---- Display Prediction Result ----
+        # ---- Display Prediction Result ----
             desc = disease_descriptions.get(pred_disease, "Description not available for this disease.")
 
             st.markdown(f"""
@@ -180,97 +180,97 @@ if st.button("🔮 Predict Disease"):
             st.info(f"🩺 **About {pred_disease}:** {desc}")
 
 
-            # ---- Show Other Possible Diseases ----
+        # ---- Show Other Possible Diseases ----
             st.subheader("🩺 Other Possible Diseases")
             prob_df = pd.DataFrame({'Disease': all_diseases, 'Probability': probs})
             prob_df = prob_df.sort_values('Probability', ascending=False)
             st.dataframe(prob_df.head(10))
             st.bar_chart(prob_df.head(10).set_index('Disease'))
 
-            # ---- Medical Disclaimer ----
+        # ---- Medical Disclaimer ----
             st.warning("⚠️ This AI tool is not a medical diagnosis. Please consult a licensed doctor for professional advice.")
 
 # ---- SECTION 2: MODEL PERFORMANCE ----
 elif option == "📊 Model Performance":
-    st.header("📊 Model Evaluation and Comparison")
+            st.header("📊 Model Evaluation and Comparison")
 
-    y_true = y
-    y_pred = ensemble_predict(models, X.values, all_diseases, return_all=True)
+            y_true = y
+            y_pred = ensemble_predict(models, X.values, all_diseases, return_all=True)
 
-    metrics = {
-        'Accuracy': accuracy_score(y_true, y_pred),
-        'Precision (Macro)': precision_score(y_true, y_pred, average='macro'),
-        'Recall (Macro)': recall_score(y_true, y_pred, average='macro'),
-        'F1 Score (Macro)': f1_score(y_true, y_pred, average='macro')
-    }
+            metrics = {
+                'Accuracy': accuracy_score(y_true, y_pred),
+                'Precision (Macro)': precision_score(y_true, y_pred, average='macro'),
+                'Recall (Macro)': recall_score(y_true, y_pred, average='macro'),
+                'F1 Score (Macro)': f1_score(y_true, y_pred, average='macro')
+            }
 
-    st.subheader("Overall Ensemble Model Performance")
-    st.write(pd.DataFrame(metrics, index=["Score"]).T)
+            st.subheader("Overall Ensemble Model Performance")
+            st.write(pd.DataFrame(metrics, index=["Score"]).T)
 
-    # ---- Model Comparison ----
-    st.subheader("Individual Model Performance (Top 3)")
-    perf_df = pd.DataFrame(top_models, columns=["Model", "Accuracy"]).sort_values("Accuracy", ascending=False)
-    st.dataframe(perf_df)
-    st.bar_chart(perf_df.set_index("Model"))
+            # ---- Model Comparison ----
+            st.subheader("Individual Model Performance (Top 3)")
+            perf_df = pd.DataFrame(top_models, columns=["Model", "Accuracy"]).sort_values("Accuracy", ascending=False)
+            st.dataframe(perf_df)
+            st.bar_chart(perf_df.set_index("Model"))
 
-    # ---- Confusion Matrix ----
-    st.subheader("Confusion Matrix (Ensemble)")
-    cm = confusion_matrix(y_true, y_pred, labels=all_diseases)
-    plt.figure(figsize=(12, 10))
-    sns.heatmap(cm, annot=False, fmt='d', xticklabels=all_diseases, yticklabels=all_diseases, cmap="Blues")
-    plt.xlabel("Predicted")
-    plt.ylabel("Actual")
-    st.pyplot(plt)
+            # ---- Confusion Matrix ----
+            st.subheader("Confusion Matrix (Ensemble)")
+            cm = confusion_matrix(y_true, y_pred, labels=all_diseases)
+            plt.figure(figsize=(12, 10))
+            sns.heatmap(cm, annot=False, fmt='d', xticklabels=all_diseases, yticklabels=all_diseases, cmap="Blues")
+            plt.xlabel("Predicted")
+            plt.ylabel("Actual")
+            st.pyplot(plt)
 
 # ---- SECTION 3: DATA VISUALIZATION ----
 elif option == "📈 Data Visualization":
-    st.header("📈 Explore Dataset Insights")
+            st.header("📈 Explore Dataset Insights")
 
-    # Symptom Frequency
-    st.subheader("🩺 Top 20 Most Common Symptoms")
-    symptom_counts = X.sum().sort_values(ascending=False).head(20)
-    st.bar_chart(symptom_counts)
+        # Symptom Frequency
+            st.subheader("🩺 Top 20 Most Common Symptoms")
+            symptom_counts = X.sum().sort_values(ascending=False).head(20)
+            st.bar_chart(symptom_counts)
 
-    # Disease Distribution
-    st.subheader("📊 Disease Distribution in Dataset")
-    disease_counts = y.value_counts()
-    st.bar_chart(disease_counts)
+        # Disease Distribution
+            st.subheader("📊 Disease Distribution in Dataset")
+            disease_counts = y.value_counts()
+            st.bar_chart(disease_counts)
 
-    # Correlation heatmap
-    st.subheader("📉 Symptom Correlation Heatmap")
-    corr = X.corr()
-    plt.figure(figsize=(10, 8))
-    sns.heatmap(corr, cmap="coolwarm", cbar=True)
-    st.pyplot(plt)
+        # Correlation heatmap
+            st.subheader("📉 Symptom Correlation Heatmap")
+            corr = X.corr()
+            plt.figure(figsize=(10, 8))
+            sns.heatmap(corr, cmap="coolwarm", cbar=True)
+            st.pyplot(plt)
 
-    # Feature importance (if available)
-    try:
-        rf = [m for m in models if hasattr(m, "feature_importances_")][0]
-        importances = pd.Series(rf.feature_importances_, index=all_symptoms).sort_values(ascending=False)
-        st.subheader("🔥 Top 15 Most Important Symptoms (Random Forest)")
-        st.bar_chart(importances.head(15))
-    except:
-        st.info("Feature importance unavailable — model does not support it.")
+        # Feature importance (if available)
+            try:
+                rf = [m for m in models if hasattr(m, "feature_importances_")][0]
+                importances = pd.Series(rf.feature_importances_, index=all_symptoms).sort_values(ascending=False)
+                st.subheader("🔥 Top 15 Most Important Symptoms (Random Forest)")
+                st.bar_chart(importances.head(15))
+            except:
+                st.info("Feature importance unavailable — model does not support it.")
 
 # ---- SECTION 4: ABOUT ----
 elif option == "ℹ️ About":
-    st.header("About the AI Symptom Checker")
-    st.markdown("""
-    This AI system predicts possible diseases based on user-selected symptoms using **machine learning models**:
-    - 🧠 **XGBoost**
-    - 🌳 **Random Forest**
-    - 💡 **LightGBM**
-    - ⚙️ **Logistic Regression**
+            st.header("About the AI Symptom Checker")
+            st.markdown("""
+                This AI system predicts possible diseases based on user-selected symptoms using **machine learning models**:
+                - 🧠 **XGBoost**
+                - 🌳 **Random Forest**
+                - 💡 **LightGBM**
+                - ⚙️ **Logistic Regression**
 
-    It uses an **ensemble learning approach** — combining multiple model predictions for better accuracy and stability.
+                It uses an **ensemble learning approach** — combining multiple model predictions for better accuracy and stability.
 
-    ### 💡 Key Features
-    - Predicts likely disease and confidence score  
-    - Shows top 10 probable diseases  
-    - Displays model performance metrics (accuracy, F1, etc.)  
-    - Provides interactive data visualizations  
-    - Explains symptom importance  
-    - Clean UI built with Streamlit  
+                ### 💡 Key Features
+                - Predicts likely disease and confidence score  
+                - Shows top 10 probable diseases  
+                - Displays model performance metrics (accuracy, F1, etc.)  
+                - Provides interactive data visualizations  
+                - Explains symptom importance  
+                - Clean UI built with Streamlit  
 
-    **Note:** This app is for educational purposes and is *not a substitute for professional medical advice.*
-    """)
+                **Note:** This app is for educational purposes and is *not a substitute for professional medical advice.*
+                """)
